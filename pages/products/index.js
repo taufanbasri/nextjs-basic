@@ -1,4 +1,19 @@
-const Products = ({ products }) => {
+import { useEffect, useState } from "react";
+
+const Products = () => {
+  const [products, setproducts] = useState([]);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      const response = await fetch("http://localhost:5000/products");
+      const data = await response.json();
+
+      setproducts(data);
+    };
+
+    getProducts();
+  }, []);
+
   return (
     <div>
       <h2>Product List</h2>
@@ -14,14 +29,3 @@ const Products = ({ products }) => {
 };
 
 export default Products;
-
-export const getServerSideProps = async () => {
-  const response = await fetch("http://localhost:5000/products");
-  const data = await response.json();
-
-  return {
-    props: {
-      products: data,
-    },
-  };
-};
