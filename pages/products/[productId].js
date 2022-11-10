@@ -1,28 +1,24 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 const ProductDetail = () => {
-  const [product, setproduct] = useState({});
   const router = useRouter();
   const { productId } = router.query;
 
-  useEffect(() => {
-    const getProduct = async () => {
-      const response = await fetch(
-        `http://localhost:5000/products/${productId}`
-      );
-      const data = await response.json();
+  const { data, error } = useSWR(
+    `http://localhost:5000/products/${productId}`,
+    fetcher
+  );
 
-      setproduct(data);
-    };
-
-    getProduct();
-  }, [productId]);
+  if (error) return <div>Failed to load.</div>;
+  if (!data) return <div>Loading...</div>;
 
   return (
     <div>
       <h2>
-        {product.name} - {product.price}
+        {data.name} - {data.price}
       </h2>
     </div>
   );

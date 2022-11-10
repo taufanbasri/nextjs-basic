@@ -1,26 +1,23 @@
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import useSWR from "swr";
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 const Products = () => {
-  const [products, setproducts] = useState([]);
+  const { data, error } = useSWR("http://localhost:5000/products", fetcher);
 
-  useEffect(() => {
-    const getProducts = async () => {
-      const response = await fetch("http://localhost:5000/products");
-      const data = await response.json();
-
-      setproducts(data);
-    };
-
-    getProducts();
-  }, []);
+  if (error) return <div>Failed to load.</div>;
+  if (!data) return <div>Loading...</div>;
 
   return (
     <div>
       <h2>Product List</h2>
       <ul>
-        {products.map((product) => (
+        {data.map((product) => (
           <li key={product.id}>
-            {product.name} - {product.price}
+            <Link href={`/products/${product.id}`}>
+              {product.name} - {product.price}
+            </Link>
           </li>
         ))}
       </ul>
